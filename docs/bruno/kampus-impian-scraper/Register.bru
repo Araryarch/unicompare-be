@@ -1,0 +1,114 @@
+meta {
+  name: Register
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://localhost:8000/api/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "newuser",
+    "password": "newpass"
+  }
+}
+
+example {
+  name: 200
+
+  request: {
+    url: http://localhost:8000/api/auth/register
+    method: POST
+    headers: {
+      content-type: application/json
+    }
+    body: {
+      type: json
+      content: '''
+        {"username":"newuser","password":"newpass"}
+      '''
+    }
+  }
+
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJuZXd1c2VyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3ODA0MDQ3NzAsImV4cCI6MTc4MDQ5MTE3MH0.abc123def456ghi789jkl012mno345pqr678stu901vwx","token_type":"bearer"}
+      '''
+    }
+  }
+}
+
+example {
+  name: 409
+
+  request: {
+    url: http://localhost:8000/api/auth/register
+    method: POST
+    headers: {
+      content-type: application/json
+    }
+    body: {
+      type: json
+      content: '''
+        {"username":"admin","password":"admin"}
+      '''
+    }
+  }
+
+  response: {
+    status: {
+      code: 409
+      text: Conflict
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"detail":"Username already exists"}
+      '''
+    }
+  }
+}
+
+example {
+  name: 422
+
+  request: {
+    url: http://localhost:8000/api/auth/register
+    method: POST
+    headers: {
+      content-type: application/json
+    }
+    body: {
+      type: json
+      content: '''
+        {"username":"ab","password":"12"}
+      '''
+    }
+  }
+
+  response: {
+    status: {
+      code: 422
+      text: Unprocessable Entity
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"detail":"Username too short (min 3)"}
+      '''
+    }
+  }
+}

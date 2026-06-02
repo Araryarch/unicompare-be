@@ -1,0 +1,93 @@
+meta {
+  name: Delete User (Admin)
+  type: http
+  seq: 15
+}
+
+delete {
+  url: http://localhost:8000/api/admin/users/newuser
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: <your-token-here>
+}
+
+example {
+  name: 200
+
+  request: {
+    url: http://localhost:8000/api/admin/users/newuser
+    method: DELETE
+    headers: {
+      authorization: Bearer <admin-token>
+    }
+  }
+
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"username":"newuser"}
+      '''
+    }
+  }
+}
+
+example {
+  name: 404
+
+  request: {
+    url: http://localhost:8000/api/admin/users/nonexistent
+    method: DELETE
+    headers: {
+      authorization: Bearer <admin-token>
+    }
+  }
+
+  response: {
+    status: {
+      code: 404
+      text: Not Found
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"detail":"User not found"}
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 (self-delete)
+
+  request: {
+    url: http://localhost:8000/api/admin/users/admin
+    method: DELETE
+    headers: {
+      authorization: Bearer <admin-token>
+    }
+  }
+
+  response: {
+    status: {
+      code: 400
+      text: Bad Request
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"detail":"Cannot delete yourself"}
+      '''
+    }
+  }
+}

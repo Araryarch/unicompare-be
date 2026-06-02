@@ -1,0 +1,54 @@
+meta {
+  name: Add Favorite
+  type: http
+  seq: 12
+}
+
+post {
+  url: http://localhost:8000/api/favorites
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "university_name": "ITB"
+  }
+}
+
+auth:bearer {
+  token: <your-token-here>
+}
+
+example {
+  name: 200
+
+  request: {
+    url: http://localhost:8000/api/favorites
+    method: POST
+    headers: {
+      content-type: application/json
+      authorization: Bearer <your-token>
+    }
+    body: {
+      type: json
+      content: '''
+        {"university_name":"ITB"}
+      '''
+    }
+  }
+
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"favorites":["ITB"]}
+      '''
+    }
+  }
+}

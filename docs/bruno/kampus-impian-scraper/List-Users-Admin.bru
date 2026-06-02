@@ -1,0 +1,70 @@
+meta {
+  name: List Users (Admin)
+  type: http
+  seq: 14
+}
+
+get {
+  url: http://localhost:8000/api/admin/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: <your-token-here>
+}
+
+example {
+  name: 200
+
+  request: {
+    url: http://localhost:8000/api/admin/users
+    method: GET
+    headers: {
+      authorization: Bearer <admin-token>
+    }
+  }
+
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+
+    body: {
+      type: json
+      content: '''
+        [
+          {"username":"admin","role":"admin"},
+          {"username":"budi","role":"user"}
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 (non-admin)
+
+  request: {
+    url: http://localhost:8000/api/admin/users
+    method: GET
+    headers: {
+      authorization: Bearer <user-token>
+    }
+  }
+
+  response: {
+    status: {
+      code: 403
+      text: Forbidden
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"detail":"Admin only"}
+      '''
+    }
+  }
+}

@@ -1,0 +1,67 @@
+meta {
+  name: Remove Favorite
+  type: http
+  seq: 13
+}
+
+delete {
+  url: http://localhost:8000/api/favorites/ITB
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: <your-token-here>
+}
+
+example {
+  name: 200
+
+  request: {
+    url: http://localhost:8000/api/favorites/ITB
+    method: DELETE
+    headers: {
+      authorization: Bearer <your-token>
+    }
+  }
+
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"favorites":[]}
+      '''
+    }
+  }
+}
+
+example {
+  name: 404
+
+  request: {
+    url: http://localhost:8000/api/favorites/ITB
+    method: DELETE
+    headers: {
+      authorization: Bearer <your-token>
+    }
+  }
+
+  response: {
+    status: {
+      code: 404
+      text: Not Found
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"detail":"Favorite not found"}
+      '''
+    }
+  }
+}

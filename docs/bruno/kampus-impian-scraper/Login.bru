@@ -1,0 +1,82 @@
+meta {
+  name: Login
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:8000/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "admin",
+    "password": "admin"
+  }
+}
+
+example {
+  name: 200
+
+  request: {
+    url: http://localhost:8000/api/auth/login
+    method: POST
+    headers: {
+      content-type: application/json
+    }
+    body: {
+      type: json
+      content: '''
+        {"username":"admin","password":"admin"}
+      '''
+    }
+  }
+
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc4MDQwNDc3MCwiZXhwIjoxNzgwNDkxMTcwfQ.mT51avgqrbJqdICBbOoHxhEMUjs4WMvkcPUCYYJuzEw","token_type":"bearer"}
+      '''
+    }
+  }
+}
+
+example {
+  name: 401
+
+  request: {
+    url: http://localhost:8000/api/auth/login
+    method: POST
+    headers: {
+      content-type: application/json
+    }
+    body: {
+      type: json
+      content: '''
+        {"username":"admin","password":"wrong"}
+      '''
+    }
+  }
+
+  response: {
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+
+    body: {
+      type: json
+      content: '''
+        {"detail":"Invalid credentials"}
+      '''
+    }
+  }
+}
