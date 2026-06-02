@@ -1,8 +1,6 @@
 import asyncio
 import logging
 
-from scrapling import AsyncFetcher, Selector
-
 from .base import extract_university_name_from_url, fetch_page_tables
 
 log = logging.getLogger(__name__)
@@ -14,6 +12,8 @@ detail_cache: dict[str, list[dict]] = {}
 
 
 async def scrape_smkitsi() -> list[dict]:
+    from scrapling import AsyncFetcher, Selector
+
     all_links = set()
     for page in range(1, 6):
         url = f"{BASE_URL}page/{page}/" if page > 1 else BASE_URL

@@ -2,8 +2,6 @@ import asyncio
 import logging
 import re
 
-from scrapling import AsyncFetcher, Selector
-
 from .base import extract_university_name_from_url, parse_programs_table
 
 log = logging.getLogger(__name__)
@@ -15,6 +13,8 @@ detail_cache: dict[str, dict] = {}
 
 
 async def scrape_page(url: str) -> tuple[list[dict], int | None]:
+    from scrapling import AsyncFetcher, Selector
+
     resp = await AsyncFetcher.get(url, follow_redirects=True)
     if resp.status != 200:
         return [], None
@@ -63,6 +63,8 @@ async def scrape_kampus_impian() -> list[dict]:
                 programs = cached["programs"]
                 detail_name = cached.get("name", "")
             else:
+                from scrapling import AsyncFetcher, Selector
+
                 resp = await AsyncFetcher.get(url, follow_redirects=True)
                 programs = []
                 detail_name = ""

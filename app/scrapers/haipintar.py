@@ -1,8 +1,6 @@
 import asyncio
 import logging
 
-from scrapling import AsyncFetcher, Selector
-
 from app.utils.url_utils import extract_last_path_segment
 
 from .base import fetch_page_tables
@@ -16,6 +14,8 @@ detail_cache: dict[str, list[dict]] = {}
 
 
 async def discover_pages() -> set[str]:
+    from scrapling import AsyncFetcher, Selector
+
     pages = set()
     try:
         resp = await AsyncFetcher.get(MASTER_URL, follow_redirects=True)

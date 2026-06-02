@@ -1,8 +1,6 @@
 import logging
 import re
 
-from scrapling import AsyncFetcher, Selector
-
 from app.utils.url_utils import extract_last_path_segment
 
 log = logging.getLogger(__name__)
@@ -14,6 +12,8 @@ async def fetch_page_tables(
     table_selector: str = "table",
     timeout: int | None = None,
 ) -> list[dict]:
+    from scrapling import AsyncFetcher, Selector
+
     if cache is not None and url in cache:
         return cache[url]
     try:
