@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.university.models import ProgramItem
+from app.dto.university import ProgramItem
 
 
 class CompareUniversity(BaseModel):

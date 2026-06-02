@@ -2,7 +2,7 @@ import asyncio
 
 from app.config import ALL_SOURCES
 
-from .models import SourceInfo, SourcesResponse
+from app.dto.source import SourceInfo, SourcesResponse
 
 
 async def get_sources() -> SourcesResponse:

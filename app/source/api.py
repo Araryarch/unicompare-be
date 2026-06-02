@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
+from app.dto.source import SourcesResponse
+
 from . import service
-from .models import SourcesResponse
 
 router = APIRouter()
 

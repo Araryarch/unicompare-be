@@ -5,7 +5,7 @@ from app.config import ALL_SOURCES
 from app.utils.merger import merge_universities
 from app.utils.normalize_name import normalize_name
 
-from .models import (
+from app.dto.university import (
     ProgramItem,
     UniversityDetail,
     UniversityListItem,

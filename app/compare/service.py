@@ -1,10 +1,9 @@
 import logging
 
-from app.utils.normalize_name import normalize_name
-from app.university.models import ProgramItem
+from app.dto.compare import CompareResponse, CompareUniversity
+from app.dto.university import ProgramItem
 from app.university.service import get_merged
-
-from .models import CompareResponse, CompareUniversity
+from app.utils.normalize_name import normalize_name
 
 log = logging.getLogger(__name__)
 

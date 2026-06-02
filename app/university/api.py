@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 
+from app.dto.university import UniversityListResponse
+
 from . import service
-from .models import UniversityListResponse
 
 router = APIRouter()
 

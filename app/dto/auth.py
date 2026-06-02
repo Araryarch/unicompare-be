@@ -25,12 +25,16 @@ class TokenResponse(BaseModel):
 
 class UserResponse(BaseModel):
     username: str
-    role: str
+    role: str = "user"
 
 
 class AdminUserResponse(BaseModel):
     username: str
-    role: str
+    role: str = "user"
+
+
+class DeletedUserResponse(BaseModel):
+    username: str
 
 
 class FavoriteRequest(BaseModel):

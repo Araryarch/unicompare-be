@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 
-from . import service
-from .models import (
+from app.dto.auth import (
     AdminUserResponse,
+    DeletedUserResponse,
     FavoriteRequest,
     FavoriteResponse,
     LoginRequest,
@@ -12,9 +11,7 @@ from .models import (
     UserResponse,
 )
 
-
-class DeletedUserResponse(BaseModel):
-    username: str
+from . import service
 
 router = APIRouter()
 

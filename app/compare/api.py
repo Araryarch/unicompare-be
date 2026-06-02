@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Query
 
+from app.dto.compare import CompareResponse
+
 from . import service
-from .models import CompareResponse
 
 router = APIRouter()
 
