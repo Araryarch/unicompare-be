@@ -1,4 +1,11 @@
+from enum import StrEnum
+
 from pydantic import BaseModel
+
+
+class Role(StrEnum):
+    ADMIN = "admin"
+    USER = "user"
 
 
 class LoginRequest(BaseModel):
@@ -18,3 +25,17 @@ class TokenResponse(BaseModel):
 
 class UserResponse(BaseModel):
     username: str
+    role: str
+
+
+class AdminUserResponse(BaseModel):
+    username: str
+    role: str
+
+
+class FavoriteRequest(BaseModel):
+    university_name: str
+
+
+class FavoriteResponse(BaseModel):
+    favorites: list[str]
