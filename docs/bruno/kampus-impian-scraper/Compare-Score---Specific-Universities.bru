@@ -1,0 +1,59 @@
+meta {
+  name: Compare Score - Specific Universities
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:8000/api/compare?score=488&universities=uin-datokarama-palu,uin-antasari-banjarmasin&q=&limit=10
+  body: none
+  auth: none
+}
+
+params:query {
+  score: 488
+  universities: uin-datokarama-palu,uin-antasari-banjarmasin
+  q: 
+  limit: 10
+}
+
+example {
+  name: 200
+  
+  request: {
+    url: http://localhost:8000/api/compare?score=488&universities=uin-datokarama-palu,uin-antasari-banjarmasin&q=&limit=10
+    method: GET
+    mode: none
+    params:query: {
+      score: 488
+      universities: uin-datokarama-palu,uin-antasari-banjarmasin
+      q: 
+      limit: 10
+    }
+  }
+  
+  response: {
+    headers: {
+      date: Mon, 25 May 2026 01:04:58 GMT
+      server: uvicorn
+      content-length: 48
+      content-type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "user_score": 488.0,
+          "total": 0,
+          "universities": []
+        }
+      '''
+    }
+  }
+}

@@ -1,0 +1,147 @@
+meta {
+  name: Search Universities
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8000/api/universities/search?q=uin&detail=false
+  body: none
+  auth: none
+}
+
+params:query {
+  q: uin
+  detail: false
+}
+
+example {
+  name: 200
+  
+  request: {
+    url: http://localhost:8000/api/universities/search?q=uin&detail=false
+    method: GET
+    mode: none
+    params:query: {
+      q: uin
+      detail: false
+    }
+  }
+  
+  response: {
+    headers: {
+      date: Mon, 25 May 2026 01:04:18 GMT
+      server: uvicorn
+      content-length: 3527
+      content-type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "total": 23,
+          "universities": [
+            {
+              "name": "Rata Rata Nilai UTBK UIN Datokarama Palu 2026",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-uin-datokarama-palu/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK UIN Antasari Banjarmasin 2026",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-uin-antasari-banjarmasin/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK UIN K.H. Abdurrahman Wahid Pekalongan 2026",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-uin-k-h-abdurrahman-wahid-pekalongan/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK UIN Salatiga 2026",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-uin-salatiga/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK UIN Profesor Kiai Haji Saifuddin Zuhri Purwokerto 2026",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-uin-profesor-kiai-haji-saifuddin-zuhri-purwokerto/"
+            },
+            {
+              "name": "Rerata Nilai UTBK UIN Raden Mas Said Surakarta 2026",
+              "url": "https://kampusimpian.com/rerata-nilai-utbk-uin-raden-mas-said-surakarta/"
+            },
+            {
+              "name": "Rerata Nilai UTBK UIN Sultan Maulana Hasanuddin Banten 2026",
+              "url": "https://kampusimpian.com/rerata-nilai-utbk-uin-sultan-maulana-hasanuddin-banten/"
+            },
+            {
+              "name": "Rerata Nilai UTBK UIN Sjech M. Djamil Djambek Bukittinggi 2026",
+              "url": "https://kampusimpian.com/rerata-nilai-utbk-uin-sjech-m-djamil-djambek-bukittinggi/"
+            },
+            {
+              "name": "Rerata Nilai UTBK UIN Mahmud Yunus Batusangkar 2026",
+              "url": "https://kampusimpian.com/rerata-nilai-utbk-uin-mahmud-yunus-batusangkar/"
+            },
+            {
+              "name": "Rerata Nilai UTBK UIN Raden Intan Lampung 2026",
+              "url": "https://kampusimpian.com/rerata-nilai-utbk-uin-raden-intan-lampung/"
+            },
+            {
+              "name": "Rerata Nilai UTBK UIN Sultan Thaha Saifuddin Jambi 2026",
+              "url": "https://kampusimpian.com/rerata-nilai-utbk-uin-sultan-thaha-saifuddin-jambi/"
+            },
+            {
+              "name": "Rerata Nilai UTBK UIN Imam Bonjol Padang 2026",
+              "url": "https://kampusimpian.com/rerata-nilai-utbk-uin-imam-bonjol-padang/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN ALAUDDIN + Peluang Lolos 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-snbt-uin-alauddin-peluang-lolos/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN Sultan Syarif Kasim + Peluang Lolos 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-snbt-uin-sultan-syarif-kasim-peluang-lolos/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN Ar-Raniry + Passing Grade 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-snbt-uin-ar-raniry-passing-grade/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN Sunan Ampel + Passing Grade 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-snbt-uin-sunan-ampel-passing-grade/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN Maulana Malik Ibrahim Malang + Peluang Lolos 2023/2024",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-snbt-uin-malang-passing-grade/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN Sunan Kalijaga + Peluang Lolos 2023/2024",
+              "url": "https://kampusimpian.com/strongrata-rata-nilai-utbk-snbt-uin-sunan-kalijaga-passing-grade/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN Walisongo + Passing Grade 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-snbt-uin-walisongo-passing-grade/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UINSU + Passing Grade 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-snbt-uinsu-passing-grade/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN Raden Fatah 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-masuk-uin-raden-fatah-terbaru/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN SGD 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-masuk-uinsgd/"
+            },
+            {
+              "name": "Rata Rata Nilai UTBK SNBT UIN JAKARTA 2023",
+              "url": "https://kampusimpian.com/rata-rata-nilai-utbk-masuk-uin-jakarta/"
+            }
+          ]
+        }
+      '''
+    }
+  }
+}
