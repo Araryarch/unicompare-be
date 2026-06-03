@@ -28,3 +28,9 @@ class UniversityDetail(BaseModel):
     sources: list[str]
     program_count: int
     programs: list[ProgramItem]
+
+
+class ProgramsResponse(BaseModel):
+    university_id: str
+    university_name: str
+    programs: list[ProgramItem]

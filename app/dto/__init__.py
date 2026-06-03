@@ -9,10 +9,22 @@ from app.dto.auth import (
     TokenResponse,
     UserResponse,
 )
-from app.dto.compare import CompareResponse, CompareUniversity
+from app.dto.compare import (
+    CompareChoice,
+    CompareChoiceResult,
+    CompareChoicesRequest,
+    CompareChoicesResponse,
+    CompareRank,
+    CompareResponse,
+    CompareUniversity,
+    Perbandingan,
+    ProgramResult,
+    UniRef,
+)
 from app.dto.source import SourceInfo, SourcesResponse
 from app.dto.university import (
     ProgramItem,
+    ProgramsResponse,
     UniversityDetail,
     UniversityListItem,
     UniversityListResponse,
@@ -20,18 +32,27 @@ from app.dto.university import (
 
 __all__ = [
     "AdminUserResponse",
+    "CompareChoice",
+    "CompareChoiceResult",
+    "CompareChoicesRequest",
+    "CompareChoicesResponse",
+    "CompareRank",
     "CompareResponse",
     "CompareUniversity",
     "DeletedUserResponse",
     "FavoriteRequest",
     "FavoriteResponse",
     "LoginRequest",
+    "Perbandingan",
     "ProgramItem",
+    "ProgramResult",
+    "ProgramsResponse",
     "RegisterRequest",
     "Role",
     "SourceInfo",
     "SourcesResponse",
     "TokenResponse",
+    "UniRef",
     "UniversityDetail",
     "UniversityListItem",
     "UniversityListResponse",

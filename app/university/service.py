@@ -6,6 +6,7 @@ from sqlalchemy.orm import selectinload
 from app.models import University, Program
 from app.dto.university import (
     ProgramItem,
+    ProgramsResponse,
     UniversityDetail,
     UniversityListItem,
     UniversityListResponse,
@@ -93,13 +94,30 @@ async def get_university_detail(db: AsyncSession, university_name: str) -> Unive
         name=uni.name,
         sources=uni.sources,
         program_count=len(programs),
-        programs=[
-            ProgramItem(
-                name=p.name,
-                score_text=p.score_text,
-                degree=p.degree or "",
-                score=p.score,
-                source_count=p.source_count
-            ) for p in programs
-        ],
+        programs=[_to_program_item(p) for p in programs],
+    )
+
+
+def _to_program_item(p: Program) -> ProgramItem:
+    return ProgramItem(
+        name=p.name,
+        score_text=p.score_text,
+        degree=p.degree or "",
+        score=p.score,
+        source_count=p.source_count,
+    )
+
+
+async def list_programs(db: AsyncSession, university_id: str) -> ProgramsResponse | None:
+    result = await db.execute(
+        select(University).options(selectinload(University.programs)).where(University.id == university_id)
+    )
+    uni = result.scalars().first()
+    if not uni:
+        return None
+    programs = sorted(uni.programs, key=lambda x: x.score or 0, reverse=True)
+    return ProgramsResponse(
+        university_id=uni.id,
+        university_name=uni.name,
+        programs=[_to_program_item(p) for p in programs],
     )

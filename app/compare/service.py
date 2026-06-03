@@ -1,10 +1,20 @@
 import logging
-from sqlalchemy import select, or_, func
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models import University, Program
-from app.dto.compare import CompareResponse, CompareUniversity
+from app.models import University
+from app.dto.compare import (
+    CompareChoice,
+    CompareChoiceResult,
+    CompareChoicesResponse,
+    CompareRank,
+    CompareResponse,
+    CompareUniversity,
+    Perbandingan,
+    ProgramResult,
+    UniRef,
+)
 from app.dto.university import ProgramItem
 from app.utils.normalize_name import normalize_name
 
@@ -78,4 +88,63 @@ async def compare_score(
         user_score=score,
         total=len(results),
         universities=results[:limit],
+    )
+
+
+async def compare_choices(
+    db: AsyncSession,
+    choices: list[CompareChoice],
+) -> CompareChoicesResponse:
+    pilihan: list[CompareChoiceResult] = []
+    for c in choices:
+        result = await db.execute(
+            select(University).options(selectinload(University.programs)).where(University.id == c.universitas)
+        )
+        uni = result.scalars().first()
+        if not uni:
+            continue
+        prog = next((p for p in uni.programs if p.name.lower() == c.program.lower()), None)
+        if not prog:
+            prog = next((p for p in uni.programs if c.program.lower() in p.name.lower()), None)
+        if not prog:
+            continue
+        pilihan.append(
+            CompareChoiceResult(
+                universitas=UniRef(id=uni.id, name=uni.name),
+                program=ProgramResult(
+                    name=prog.name,
+                    score=prog.score,
+                    score_text=prog.score_text,
+                    degree=prog.degree,
+                ),
+            )
+        )
+
+    ranked = sorted(
+        pilihan,
+        key=lambda x: x.program.score if x.program.score is not None else -1,
+        reverse=True,
+    )
+
+    urutan = [
+        CompareRank(
+            universitas=p.universitas.name,
+            program=p.program.name,
+            score=p.program.score,
+        )
+        for p in ranked
+    ]
+
+    tertinggi = urutan[0] if urutan else None
+    terendah = urutan[-1] if len(urutan) > 1 else tertinggi
+    selisih = (tertinggi.score - terendah.score) if tertinggi and terendah and tertinggi.score is not None and terendah.score is not None else None
+
+    return CompareChoicesResponse(
+        pilihan=pilihan,
+        perbandingan=Perbandingan(
+            tertinggi=tertinggi,
+            terendah=terendah,
+            selisih=selisih,
+            urutan=urutan,
+        ),
     )
