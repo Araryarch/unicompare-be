@@ -1,13 +1,20 @@
-import json
-import os
+from sqlalchemy import select, func
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dto.source import SourcesResponse
+from app.models import Source
+from app.dto.source import SourceInfo, SourcesResponse
 
-
-async def get_sources() -> SourcesResponse:
-    data_path = os.path.join(
-        os.path.dirname(__file__), "..", "..", "data", "sources.json"
+async def get_sources(db: AsyncSession) -> SourcesResponse:
+    stmt = select(Source).order_by(Source.name)
+    result = await db.execute(stmt)
+    sources = result.scalars().all()
+    
+    total = sum(s.count for s in sources)
+    
+    return SourcesResponse(
+        sources=[
+            SourceInfo(name=s.name, label=s.label, count=s.count)
+            for s in sources
+        ],
+        total=total,
     )
-    with open(data_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return SourcesResponse(**data)

@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dto.compare import CompareResponse
+from app.database import get_db
 
 from . import service
 
@@ -13,8 +15,10 @@ async def compare(
     q: str = Query(default=""),
     universities: str = Query(default=""),
     limit: int = Query(default=50, ge=1, le=500),
+    db: AsyncSession = Depends(get_db)
 ):
     return await service.compare_score(
+        db=db,
         score=score,
         q=q,
         universities=universities,

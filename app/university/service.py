@@ -1,7 +1,9 @@
-import json
 import logging
-import os
+from sqlalchemy import select, or_, func
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
+from app.models import University, Program
 from app.dto.university import (
     ProgramItem,
     UniversityDetail,
@@ -12,77 +14,92 @@ from app.utils.normalize_name import normalize_name
 
 log = logging.getLogger(__name__)
 
-_merged_cache: list[dict] | None = None
 
-
-async def get_merged() -> list[dict]:
-    global _merged_cache
-    if _merged_cache is not None:
-        return _merged_cache
-
-    data_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "universities.json")
-    with open(data_path, "r", encoding="utf-8") as f:
-        result: list[dict] = json.load(f)
-    _merged_cache = result
-    return result
-
-
-async def list_universities(limit: int = 0) -> UniversityListResponse:
-    data = await get_merged()
+async def list_universities(db: AsyncSession, limit: int = 0) -> UniversityListResponse:
+    stmt = select(University).options(selectinload(University.programs)).order_by(University.name)
     if limit > 0:
-        data = data[:limit]
+        stmt = stmt.limit(limit)
+    
+    result = await db.execute(stmt)
+    universities = result.scalars().all()
+    
+    # Need total count
+    count_stmt = select(func.count(University.id))
+    total = await db.scalar(count_stmt)
+
     return UniversityListResponse(
-        total=len(data),
+        total=total or 0,
         universities=[
             UniversityListItem(
-                id=u["id"],
-                name=u["name"],
-                sources=u["sources"],
-                program_count=len(u["programs"]),
+                id=u.id,
+                name=u.name,
+                sources=u.sources,
+                program_count=len(u.programs),
             )
-            for u in data
+            for u in universities
         ],
     )
 
 
-async def search_universities(q: str) -> UniversityListResponse:
-    data = await get_merged()
+async def search_universities(db: AsyncSession, q: str) -> UniversityListResponse:
     ql = q.lower()
-    results = [u for u in data if ql in u["name"].lower() or ql in u["id"]]
+    stmt = select(University).options(selectinload(University.programs)).where(
+        or_(
+            func.lower(University.name).contains(ql),
+            func.lower(University.id).contains(ql)
+        )
+    ).order_by(University.name)
+    
+    result = await db.execute(stmt)
+    universities = result.scalars().all()
+    
     return UniversityListResponse(
-        total=len(results),
+        total=len(universities),
         universities=[
             UniversityListItem(
-                id=u["id"],
-                name=u["name"],
-                sources=u["sources"],
-                program_count=len(u["programs"]),
+                id=u.id,
+                name=u.name,
+                sources=u.sources,
+                program_count=len(u.programs),
             )
-            for u in results
+            for u in universities
         ],
     )
 
 
-async def get_university_detail(university_name: str) -> UniversityDetail | None:
-    data = await get_merged()
+async def get_university_detail(db: AsyncSession, university_name: str) -> UniversityDetail | None:
     ql = university_name.lower().strip()
     qn = normalize_name(university_name)
-    matches = [
-        u
-        for u in data
-        if ql in u["id"]
-        or ql in u["name"].lower()
-        or qn in u["id"]
-        or qn in u["name"].lower()
-    ]
-    if not matches:
+    
+    stmt = select(University).options(selectinload(University.programs)).where(
+        or_(
+            func.lower(University.name).contains(ql),
+            func.lower(University.id).contains(ql),
+            func.lower(University.name).contains(qn),
+            func.lower(University.id).contains(qn)
+        )
+    ).limit(1)
+    
+    result = await db.execute(stmt)
+    uni = result.scalars().first()
+    
+    if not uni:
         return None
-    uni = matches[0]
-    programs = sorted(uni["programs"], key=lambda x: x["score"] or 0, reverse=True)
+        
+    programs = sorted(uni.programs, key=lambda x: x.score or 0, reverse=True)
+    
     return UniversityDetail(
-        id=uni["id"],
-        name=uni["name"],
-        sources=uni["sources"],
+        id=uni.id,
+        name=uni.name,
+        sources=uni.sources,
         program_count=len(programs),
-        programs=[ProgramItem(**p) for p in programs],
+        programs=[
+            ProgramItem(
+                name=p.name,
+                score_text=p.score_text,
+                degree=p.degree or "",
+                score=p.score,
+                source_count=p.source_count
+            ) for p in programs
+        ],
     )
