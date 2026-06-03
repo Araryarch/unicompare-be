@@ -1,5 +1,5 @@
-import os
 import hashlib
+import os
 import secrets
 from datetime import datetime, timedelta, timezone
 
@@ -82,9 +82,7 @@ async def get_current_user(
     creds: HTTPAuthorizationCredentials = Depends(security),
 ) -> dict:
     try:
-        payload = jwt.decode(
-            creds.credentials, _get_secret(), algorithms=[ALGORITHM]
-        )
+        payload = jwt.decode(creds.credentials, _get_secret(), algorithms=[ALGORITHM])
         username = payload.get("sub")
         role = payload.get("role")
         if username is None or role is None:
@@ -121,10 +119,7 @@ async def remove_favorite(username: str, university_name: str) -> bool:
 
 
 async def list_users() -> list[dict]:
-    return [
-        {"username": u, "role": r["role"]}
-        for u, r in _users.items()
-    ]
+    return [{"username": u, "role": r["role"]} for u, r in _users.items()]
 
 
 async def delete_user(username: str) -> bool:

@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 import os
@@ -20,11 +19,12 @@ async def get_merged() -> list[dict]:
     global _merged_cache
     if _merged_cache is not None:
         return _merged_cache
-    
+
     data_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "universities.json")
     with open(data_path, "r", encoding="utf-8") as f:
-        _merged_cache = json.load(f)
-    return _merged_cache
+        result: list[dict] = json.load(f)
+    _merged_cache = result
+    return result
 
 
 async def list_universities(limit: int = 0) -> UniversityListResponse:
