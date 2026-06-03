@@ -1,0 +1,16 @@
+meta {
+  name: Get Universities with Detail
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:8000/api/universities
+  body: none
+}
+
+params:query {
+  limit: 3
+  detail: true
+}
+

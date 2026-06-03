@@ -71,6 +71,99 @@ MOCK_UNIVERSITIES = [
             {"name": "Kesehatan Masyarakat", "score": 660.8},
             {"name": "Manajemen", "score": 670.3}
         ]
+    },
+    {
+        "id": "undip",
+        "name": "Universitas Diponegoro",
+        "programs": [
+            {"name": "Kedokteran", "score": 715.4},
+            {"name": "Kesehatan Masyarakat", "score": 645.2},
+            {"name": "Teknik Sipil", "score": 630.0},
+            {"name": "Teknik Mesin", "score": 625.8},
+            {"name": "Ilmu Hukum", "score": 650.5},
+            {"name": "Ilmu Komunikasi", "score": 640.1},
+            {"name": "Informatika", "score": 680.2},
+            {"name": "Akuntansi", "score": 655.7}
+        ]
+    },
+    {
+        "id": "unpad",
+        "name": "Universitas Padjadjaran",
+        "programs": [
+            {"name": "Pendidikan Dokter", "score": 720.1},
+            {"name": "Psikologi", "score": 670.5},
+            {"name": "Ilmu Komunikasi", "score": 665.8},
+            {"name": "Ilmu Hukum", "score": 660.4},
+            {"name": "Manajemen", "score": 655.0},
+            {"name": "Akuntansi", "score": 645.3},
+            {"name": "Teknik Informatika", "score": 675.2},
+            {"name": "Hubungan Internasional", "score": 650.0}
+        ]
+    },
+    {
+        "id": "ub",
+        "name": "Universitas Brawijaya",
+        "programs": [
+            {"name": "Kedokteran", "score": 718.5},
+            {"name": "Teknik Informatika", "score": 685.0},
+            {"name": "Ilmu Hukum", "score": 640.2},
+            {"name": "Manajemen", "score": 635.8},
+            {"name": "Teknik Industri", "score": 645.5},
+            {"name": "Kesehatan Masyarakat", "score": 620.4},
+            {"name": "Ilmu Komunikasi", "score": 630.1},
+            {"name": "Administrasi Bisnis", "score": 625.6}
+        ]
+    },
+    {
+        "id": "uns",
+        "name": "Universitas Sebelas Maret",
+        "programs": [
+            {"name": "Kedokteran", "score": 710.2},
+            {"name": "Informatika", "score": 670.8},
+            {"name": "Teknik Sipil", "score": 625.5},
+            {"name": "Ilmu Hukum", "score": 635.4},
+            {"name": "Manajemen", "score": 630.1},
+            {"name": "Psikologi", "score": 645.0},
+            {"name": "Ilmu Komunikasi", "score": 620.8}
+        ]
+    },
+    {
+        "id": "unnes",
+        "name": "Universitas Negeri Semarang",
+        "programs": [
+            {"name": "Pendidikan Guru Sekolah Dasar", "score": 580.5},
+            {"name": "Manajemen", "score": 595.2},
+            {"name": "Akuntansi", "score": 590.1},
+            {"name": "Ilmu Hukum", "score": 605.8},
+            {"name": "Teknik Informatika", "score": 620.4},
+            {"name": "Kesehatan Masyarakat", "score": 585.5},
+            {"name": "Pendidikan Bahasa Inggris", "score": 570.6}
+        ]
+    },
+    {
+        "id": "upi",
+        "name": "Universitas Pendidikan Indonesia",
+        "programs": [
+            {"name": "Pendidikan Guru Sekolah Dasar", "score": 590.2},
+            {"name": "Psikologi", "score": 620.5},
+            {"name": "Manajemen", "score": 610.8},
+            {"name": "Ilmu Komunikasi", "score": 605.4},
+            {"name": "Pendidikan Bahasa Inggris", "score": 585.1},
+            {"name": "Ilmu Komputer", "score": 635.7}
+        ]
+    },
+    {
+        "id": "unhas",
+        "name": "Universitas Hasanuddin",
+        "programs": [
+            {"name": "Pendidikan Dokter", "score": 705.4},
+            {"name": "Kesehatan Masyarakat", "score": 615.2},
+            {"name": "Teknik Informatika", "score": 655.8},
+            {"name": "Ilmu Hukum", "score": 625.1},
+            {"name": "Manajemen", "score": 620.5},
+            {"name": "Teknik Sipil", "score": 610.4},
+            {"name": "Kehutanan", "score": 580.6}
+        ]
     }
 ]
 
@@ -82,7 +175,7 @@ async def seed():
     
     print("Menyimpan data sources...")
     async with AsyncSessionLocal() as session:
-        session.add(Source(name="internal_mock", label="Prediksi Internal (Mock)", count=34))
+        session.add(Source(name="internal_mock", label="Prediksi Internal (Mock)", count=45))
         await session.commit()
 
     print("Menyimpan data universities...")

@@ -1,0 +1,16 @@
+meta {
+  name: Remove Favorite
+  type: http
+  seq: 13
+}
+
+delete {
+  url: http://localhost:8000/api/favorites/ITB
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: <your-token-here>
+}
+

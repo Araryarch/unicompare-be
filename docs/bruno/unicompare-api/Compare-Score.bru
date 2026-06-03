@@ -1,0 +1,18 @@
+meta {
+  name: Compare Score
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:8000/api/compare
+  body: none
+}
+
+params:query {
+  score: 500
+  universities: 
+  q: 
+  limit: 50
+}
+

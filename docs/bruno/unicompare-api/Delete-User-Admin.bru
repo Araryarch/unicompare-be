@@ -1,0 +1,16 @@
+meta {
+  name: Delete User (Admin)
+  type: http
+  seq: 15
+}
+
+delete {
+  url: http://localhost:8000/api/admin/users/newuser
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: <your-token-here>
+}
+

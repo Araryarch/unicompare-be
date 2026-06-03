@@ -1,0 +1,17 @@
+meta {
+  name: Search Universities
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8000/api/universities/search?q=uin&detail=false
+  body: none
+  auth: none
+}
+
+params:query {
+  q: uin
+  detail: false
+}
+
