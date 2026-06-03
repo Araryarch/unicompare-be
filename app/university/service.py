@@ -1,9 +1,7 @@
 import asyncio
+import json
 import logging
-
-from app.config import ALL_SOURCES
-from app.utils.merger import merge_universities
-from app.utils.normalize_name import normalize_name
+import os
 
 from app.dto.university import (
     ProgramItem,
@@ -11,6 +9,7 @@ from app.dto.university import (
     UniversityListItem,
     UniversityListResponse,
 )
+from app.utils.normalize_name import normalize_name
 
 log = logging.getLogger(__name__)
 
@@ -21,8 +20,10 @@ async def get_merged() -> list[dict]:
     global _merged_cache
     if _merged_cache is not None:
         return _merged_cache
-    results = await asyncio.gather(*[fn() for _, _, fn in ALL_SOURCES])
-    _merged_cache = merge_universities(*results)
+    
+    data_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "universities.json")
+    with open(data_path, "r", encoding="utf-8") as f:
+        _merged_cache = json.load(f)
     return _merged_cache
 
 
