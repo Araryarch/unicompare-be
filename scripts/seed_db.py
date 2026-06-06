@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.database import engine, Base, AsyncSessionLocal
+from app.database import _engine as engine, Base, _AsyncSessionLocal as AsyncSessionLocal
 from app.models import University, Program, Source
 
 MOCK_UNIVERSITIES = [

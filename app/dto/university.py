@@ -34,3 +34,21 @@ class ProgramsResponse(BaseModel):
     university_id: str
     university_name: str
     programs: list[ProgramItem]
+
+
+class CreateUniversityRequest(BaseModel):
+    id: str
+    name: str
+    sources: list[str] = []
+
+
+class UpdateUniversityRequest(BaseModel):
+    name: str | None = None
+    sources: list[str] | None = None
+
+
+class UniversityCreateResponse(BaseModel):
+    id: str
+    name: str
+    sources: list[str]
+    program_count: int = 0

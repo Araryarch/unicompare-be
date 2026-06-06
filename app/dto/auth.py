@@ -35,11 +35,3 @@ class AdminUserResponse(BaseModel):
 
 class DeletedUserResponse(BaseModel):
     username: str
-
-
-class FavoriteRequest(BaseModel):
-    university_name: str
-
-
-class FavoriteResponse(BaseModel):
-    favorites: list[str]

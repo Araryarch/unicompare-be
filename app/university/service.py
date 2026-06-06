@@ -5,8 +5,10 @@ from sqlalchemy.orm import selectinload
 
 from app.models import University, Program
 from app.dto.university import (
+    CreateUniversityRequest,
     ProgramItem,
     ProgramsResponse,
+    UpdateUniversityRequest,
     UniversityDetail,
     UniversityListItem,
     UniversityListResponse,
@@ -121,3 +123,43 @@ async def list_programs(db: AsyncSession, university_id: str) -> ProgramsRespons
         university_name=uni.name,
         programs=[_to_program_item(p) for p in programs],
     )
+
+
+async def create_university(
+    db: AsyncSession, data: CreateUniversityRequest
+) -> University:
+    uni = University(id=data.id, name=data.name, sources=data.sources)
+    db.add(uni)
+    await db.commit()
+    await db.refresh(uni)
+    return uni
+
+
+async def update_university(
+    db: AsyncSession, university_id: str, data: UpdateUniversityRequest
+) -> University | None:
+    result = await db.execute(
+        select(University).where(University.id == university_id)
+    )
+    uni = result.scalars().first()
+    if not uni:
+        return None
+    if data.name is not None:
+        uni.name = data.name
+    if data.sources is not None:
+        uni.sources = data.sources
+    await db.commit()
+    await db.refresh(uni)
+    return uni
+
+
+async def delete_university(db: AsyncSession, university_id: str) -> bool:
+    result = await db.execute(
+        select(University).where(University.id == university_id)
+    )
+    uni = result.scalars().first()
+    if not uni:
+        return False
+    await db.delete(uni)
+    await db.commit()
+    return True

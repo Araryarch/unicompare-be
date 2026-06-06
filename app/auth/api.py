@@ -1,15 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.database import get_db
 from app.dto.auth import (
     AdminUserResponse,
     DeletedUserResponse,
-    FavoriteRequest,
-    FavoriteResponse,
     LoginRequest,
     RegisterRequest,
     TokenResponse,
     UserResponse,
 )
+from app.dto.university import (
+    CreateUniversityRequest,
+    UpdateUniversityRequest,
+    UniversityCreateResponse,
+)
+from app.university import service as university_service
 
 from . import service
 
@@ -41,34 +47,6 @@ async def me(user: dict = Depends(service.get_current_user)):
     return UserResponse(username=user["username"], role=user["role"])
 
 
-@router.get("/favorites", response_model=FavoriteResponse)
-async def list_favorites(user: dict = Depends(service.get_current_user)):
-    favs = await service.get_favorites(user["username"])
-    return FavoriteResponse(favorites=favs)
-
-
-@router.post("/favorites", response_model=FavoriteResponse)
-async def add_favorite(
-    body: FavoriteRequest,
-    user: dict = Depends(service.get_current_user),
-):
-    await service.add_favorite(user["username"], body.university_name)
-    favs = await service.get_favorites(user["username"])
-    return FavoriteResponse(favorites=favs)
-
-
-@router.delete("/favorites/{university_name}", response_model=FavoriteResponse)
-async def remove_favorite(
-    university_name: str,
-    user: dict = Depends(service.get_current_user),
-):
-    ok = await service.remove_favorite(user["username"], university_name)
-    if not ok:
-        raise HTTPException(status_code=404, detail="Favorite not found")
-    favs = await service.get_favorites(user["username"])
-    return FavoriteResponse(favorites=favs)
-
-
 @router.get("/admin/users", response_model=list[AdminUserResponse])
 async def admin_list_users(user: dict = Depends(service.require_admin)):
     return await service.list_users()
@@ -85,3 +63,38 @@ async def admin_delete_user(
     if not ok:
         raise HTTPException(status_code=404, detail="User not found")
     return DeletedUserResponse(username=username)
+
+
+@router.post("/admin/universities", response_model=UniversityCreateResponse)
+async def admin_create_university(
+    body: CreateUniversityRequest,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    uni = await university_service.create_university(db, body)
+    return UniversityCreateResponse(id=uni.id, name=uni.name, sources=uni.sources)
+
+
+@router.put("/admin/universities/{university_id}", response_model=UniversityCreateResponse)
+async def admin_update_university(
+    university_id: str,
+    body: UpdateUniversityRequest,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    uni = await university_service.update_university(db, university_id, body)
+    if uni is None:
+        raise HTTPException(status_code=404, detail="University not found")
+    return UniversityCreateResponse(id=uni.id, name=uni.name, sources=uni.sources)
+
+
+@router.delete("/admin/universities/{university_id}")
+async def admin_delete_university(
+    university_id: str,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    ok = await university_service.delete_university(db, university_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="University not found")
+    return {"message": f"University {university_id} deleted"}

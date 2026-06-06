@@ -1,0 +1,22 @@
+meta {
+  name: Update University (Admin)
+  type: http
+  seq: 12
+}
+
+put {
+  url: http://localhost:8000/api/admin/universities/itb
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "name": "Institut Teknologi Bandung Updated",
+    "sources": ["internal_mock", "edukasi"]
+  }
+}
+
+auth:bearer {
+  token: <admin-token-here>
+}

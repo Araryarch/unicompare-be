@@ -14,7 +14,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 
 _SECRET_KEY: str | None = None
 _users: dict[str, dict] = {}
-_favorites: dict[str, set[str]] = {}
+
 
 security = HTTPBearer()
 
@@ -102,22 +102,6 @@ async def require_admin(
     return user
 
 
-async def get_favorites(username: str) -> list[str]:
-    return sorted(_favorites.get(username, set()))
-
-
-async def add_favorite(username: str, university_name: str) -> None:
-    _favorites.setdefault(username, set()).add(university_name)
-
-
-async def remove_favorite(username: str, university_name: str) -> bool:
-    favs = _favorites.get(username)
-    if favs is None or university_name not in favs:
-        return False
-    favs.discard(university_name)
-    return True
-
-
 async def list_users() -> list[dict]:
     return [{"username": u, "role": r["role"]} for u, r in _users.items()]
 
@@ -126,5 +110,4 @@ async def delete_user(username: str) -> bool:
     if username not in _users:
         return False
     del _users[username]
-    _favorites.pop(username, None)
     return True

@@ -1,8 +1,6 @@
 from app.dto.auth import (
     AdminUserResponse,
     DeletedUserResponse,
-    FavoriteRequest,
-    FavoriteResponse,
     LoginRequest,
     RegisterRequest,
     Role,
@@ -23,8 +21,11 @@ from app.dto.compare import (
 )
 from app.dto.source import SourceInfo, SourcesResponse
 from app.dto.university import (
+    CreateUniversityRequest,
     ProgramItem,
     ProgramsResponse,
+    UpdateUniversityRequest,
+    UniversityCreateResponse,
     UniversityDetail,
     UniversityListItem,
     UniversityListResponse,
@@ -39,9 +40,8 @@ __all__ = [
     "CompareRank",
     "CompareResponse",
     "CompareUniversity",
+    "CreateUniversityRequest",
     "DeletedUserResponse",
-    "FavoriteRequest",
-    "FavoriteResponse",
     "LoginRequest",
     "Perbandingan",
     "ProgramItem",
@@ -53,6 +53,8 @@ __all__ = [
     "SourcesResponse",
     "TokenResponse",
     "UniRef",
+    "UpdateUniversityRequest",
+    "UniversityCreateResponse",
     "UniversityDetail",
     "UniversityListItem",
     "UniversityListResponse",
