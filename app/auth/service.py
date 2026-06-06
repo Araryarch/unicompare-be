@@ -50,11 +50,10 @@ async def _seed_admin(db: AsyncSession) -> None:
     await db.commit()
 
 
-def _build_token(username: str, role: str) -> str:
+def _build_token(username: str) -> str:
     now = datetime.now(timezone.utc)
     payload = {
         "sub": username,
-        "role": role,
         "iat": now,
         "exp": now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     }
@@ -68,7 +67,7 @@ async def register(db: AsyncSession, username: str, password: str) -> str | None
         return None
     db.add(User(username=username, password=_hash_password(password), role=Role.USER.value))
     await db.commit()
-    return _build_token(username, Role.USER.value)
+    return _build_token(username)
 
 
 async def authenticate(db: AsyncSession, username: str, password: str) -> str | None:
@@ -77,19 +76,25 @@ async def authenticate(db: AsyncSession, username: str, password: str) -> str | 
     user = result.scalar_one_or_none()
     if user is None or not _verify_password(password, user.password):
         return None
-    return _build_token(username, user.role)
+    return _build_token(username)
 
 
 async def get_current_user(
     creds: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db),
 ) -> dict:
     try:
         payload = jwt.decode(creds.credentials, _get_secret(), algorithms=[ALGORITHM])
         username = payload.get("sub")
-        role = payload.get("role")
-        if username is None or role is None:
+        if username is None:
             raise HTTPException(status_code=401, detail="Invalid token")
-        return {"username": username, "role": role}
+            
+        result = await db.execute(select(User).where(User.username == username))
+        user = result.scalar_one_or_none()
+        if user is None:
+            raise HTTPException(status_code=401, detail="User not found")
+            
+        return {"username": user.username, "role": user.role}
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
