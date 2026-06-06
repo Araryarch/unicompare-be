@@ -1,0 +1,31 @@
+meta {
+  name: Update Program Scores (Admin)
+  type: http
+  seq: 18
+}
+
+put {
+  url: http://localhost:8000/api/admin/universities/itb/programs
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "programs": [
+      {
+        "id": 1,
+        "score": 650.5,
+        "score_text": "650.5"
+      },
+      {
+        "id": 2,
+        "score": 700.0
+      }
+    ]
+  }
+}
+
+auth:bearer {
+  token: <admin-token-here>
+}
