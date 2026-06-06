@@ -1,32 +1,33 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, JSON
-from sqlalchemy.orm import relationship
+from typing import Optional
+from sqlalchemy import String, Integer, Float, ForeignKey, JSON
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .database import Base
 
 class Source(Base):
     __tablename__ = "sources"
 
-    name = Column(String, primary_key=True, index=True)
-    label = Column(String, nullable=False)
-    count = Column(Integer, default=0)
+    name: Mapped[str] = mapped_column(String, primary_key=True, index=True)
+    label: Mapped[str] = mapped_column(String, nullable=False)
+    count: Mapped[int] = mapped_column(Integer, default=0)
 
 class University(Base):
     __tablename__ = "universities"
 
-    id = Column(String, primary_key=True, index=True)
-    name = Column(String, nullable=False, index=True)
-    sources = Column(JSON, nullable=False, default=list)
+    id: Mapped[str] = mapped_column(String, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    sources: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
 
-    programs = relationship("Program", back_populates="university", cascade="all, delete-orphan")
+    programs: Mapped[list["Program"]] = relationship("Program", back_populates="university", cascade="all, delete-orphan")
 
 class Program(Base):
     __tablename__ = "programs"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    university_id = Column(String, ForeignKey("universities.id"), nullable=False, index=True)
-    name = Column(String, nullable=False, index=True)
-    score_text = Column(String, nullable=False)
-    degree = Column(String, nullable=True)
-    score = Column(Float, nullable=True, index=True)
-    source_count = Column(Integer, default=1)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+    university_id: Mapped[str] = mapped_column(String, ForeignKey("universities.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    score_text: Mapped[str] = mapped_column(String, nullable=False)
+    degree: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    score: Mapped[Optional[float]] = mapped_column(Float, nullable=True, index=True)
+    source_count: Mapped[int] = mapped_column(Integer, default=1)
 
-    university = relationship("University", back_populates="programs")
+    university: Mapped["University"] = relationship("University", back_populates="programs")
