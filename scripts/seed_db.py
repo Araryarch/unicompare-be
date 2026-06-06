@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.database import _engine as engine, Base, _AsyncSessionLocal as AsyncSessionLocal
+from app.database import _get_sessionmaker, init_db
 from app.models import University, Program, Source
 
 MOCK_UNIVERSITIES = [
@@ -168,11 +168,16 @@ MOCK_UNIVERSITIES = [
 ]
 
 async def seed():
-    print("Membuat ulang tabel database (drop & create)...")
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    
+    await init_db()
+    AsyncSessionLocal = _get_sessionmaker()
+
+    print("Menghapus data yang sudah ada...")
+    async with AsyncSessionLocal() as session:
+        await session.execute(Program.__table__.delete())
+        await session.execute(University.__table__.delete())
+        await session.execute(Source.__table__.delete())
+        await session.commit()
+
     print("Menyimpan data sources...")
     async with AsyncSessionLocal() as session:
         session.add(Source(name="internal_mock", label="Prediksi Internal (Mock)", count=45))
@@ -187,6 +192,7 @@ async def seed():
                 sources=["internal_mock"]
             )
             session.add(uni)
+            await session.flush()
             for p in u["programs"]:
                 prog = Program(
                     university_id=uni.id,
@@ -198,7 +204,7 @@ async def seed():
                 )
                 session.add(prog)
         await session.commit()
-    
+
     print("Seeding database fiktif berhasil!")
 
 if __name__ == "__main__":

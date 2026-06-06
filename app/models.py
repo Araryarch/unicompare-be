@@ -3,6 +3,13 @@ from sqlalchemy import String, Integer, Float, ForeignKey, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .database import Base
 
+class User(Base):
+    __tablename__ = "users"
+
+    username: Mapped[str] = mapped_column(String, primary_key=True, index=True)
+    password: Mapped[str] = mapped_column(String, nullable=False)
+    role: Mapped[str] = mapped_column(String, nullable=False, default="user")
+
 class Source(Base):
     __tablename__ = "sources"
 

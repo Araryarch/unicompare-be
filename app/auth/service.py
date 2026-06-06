@@ -6,15 +6,17 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.database import get_db
 from app.dto.auth import Role
+from app.models import User
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 
 _SECRET_KEY: str | None = None
-_users: dict[str, dict] = {}
-
 
 security = HTTPBearer()
 
@@ -38,14 +40,14 @@ def _verify_password(password: str, stored: str) -> bool:
     return secrets.compare_digest(f"{salt}:{dk.hex()}", stored)
 
 
-def _seed_admin() -> None:
+async def _seed_admin(db: AsyncSession) -> None:
+    result = await db.execute(select(User).where(User.username == os.getenv("UNICOMPARE_USERNAME", "admin")))
+    if result.scalar_one_or_none() is not None:
+        return
     user = os.getenv("UNICOMPARE_USERNAME", "admin")
     passwd = os.getenv("UNICOMPARE_PASSWORD", "admin")
-    if user not in _users:
-        _users[user] = {
-            "password": _hash_password(passwd),
-            "role": Role.ADMIN,
-        }
+    db.add(User(username=user, password=_hash_password(passwd), role=Role.ADMIN.value))
+    await db.commit()
 
 
 def _build_token(username: str, role: str) -> str:
@@ -59,23 +61,23 @@ def _build_token(username: str, role: str) -> str:
     return jwt.encode(payload, _get_secret(), algorithm=ALGORITHM)
 
 
-async def register(username: str, password: str) -> str | None:
-    _seed_admin()
-    if username in _users:
+async def register(db: AsyncSession, username: str, password: str) -> str | None:
+    await _seed_admin(db)
+    result = await db.execute(select(User).where(User.username == username))
+    if result.scalar_one_or_none() is not None:
         return None
-    _users[username] = {
-        "password": _hash_password(password),
-        "role": Role.USER,
-    }
-    return _build_token(username, Role.USER)
+    db.add(User(username=username, password=_hash_password(password), role=Role.USER.value))
+    await db.commit()
+    return _build_token(username, Role.USER.value)
 
 
-async def authenticate(username: str, password: str) -> str | None:
-    _seed_admin()
-    record = _users.get(username)
-    if record is None or not _verify_password(password, record["password"]):
+async def authenticate(db: AsyncSession, username: str, password: str) -> str | None:
+    await _seed_admin(db)
+    result = await db.execute(select(User).where(User.username == username))
+    user = result.scalar_one_or_none()
+    if user is None or not _verify_password(password, user.password):
         return None
-    return _build_token(username, record["role"])
+    return _build_token(username, user.role)
 
 
 async def get_current_user(
@@ -102,12 +104,17 @@ async def require_admin(
     return user
 
 
-async def list_users() -> list[dict]:
-    return [{"username": u, "role": r["role"]} for u, r in _users.items()]
+async def list_users(db: AsyncSession) -> list[dict]:
+    result = await db.execute(select(User))
+    users = result.scalars().all()
+    return [{"username": u.username, "role": u.role} for u in users]
 
 
-async def delete_user(username: str) -> bool:
-    if username not in _users:
+async def delete_user(db: AsyncSession, username: str) -> bool:
+    result = await db.execute(select(User).where(User.username == username))
+    user = result.scalar_one_or_none()
+    if user is None:
         return False
-    del _users[username]
+    await db.delete(user)
+    await db.commit()
     return True

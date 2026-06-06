@@ -1,15 +1,27 @@
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from app.auth.api import router as auth_router
 from app.compare.api import router as compare_router
+from app.database import init_db
 from app.source.api import router as source_router
 from app.university.api import router as university_router
 
 logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
-app = FastAPI(title="Unicompare")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    log.info("Creating database tables...")
+    await init_db()
+    log.info("Database ready")
+    yield
+
+
+app = FastAPI(title="Unicompare", lifespan=lifespan)
 
 app.include_router(auth_router, prefix="/api")
 app.include_router(source_router, prefix="/api")

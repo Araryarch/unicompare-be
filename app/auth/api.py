@@ -13,9 +13,9 @@ from app.dto.auth import (
 from app.dto.university import (
     CreateUniversityRequest,
     ProgramUpdateResponse,
+    UniversityCreateResponse,
     UpdateProgramScoresRequest,
     UpdateUniversityRequest,
-    UniversityCreateResponse,
 )
 from app.university import service as university_service
 
@@ -25,20 +25,20 @@ router = APIRouter()
 
 
 @router.post("/auth/login", response_model=TokenResponse)
-async def login(body: LoginRequest):
-    token = await service.authenticate(body.username, body.password)
+async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
+    token = await service.authenticate(db, body.username, body.password)
     if token is None:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return TokenResponse(access_token=token)
 
 
 @router.post("/auth/register", response_model=TokenResponse)
-async def register(body: RegisterRequest):
+async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     if len(body.username) < 3:
         raise HTTPException(status_code=422, detail="Username too short (min 3)")
     if len(body.password) < 4:
         raise HTTPException(status_code=422, detail="Password too short (min 4)")
-    token = await service.register(body.username, body.password)
+    token = await service.register(db, body.username, body.password)
     if token is None:
         raise HTTPException(status_code=409, detail="Username already exists")
     return TokenResponse(access_token=token)
@@ -50,18 +50,22 @@ async def me(user: dict = Depends(service.get_current_user)):
 
 
 @router.get("/admin/users", response_model=list[AdminUserResponse])
-async def admin_list_users(user: dict = Depends(service.require_admin)):
-    return await service.list_users()
+async def admin_list_users(
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    return await service.list_users(db)
 
 
 @router.delete("/admin/users/{username}", response_model=DeletedUserResponse)
 async def admin_delete_user(
     username: str,
+    db: AsyncSession = Depends(get_db),
     user: dict = Depends(service.require_admin),
 ):
     if username == user["username"]:
         raise HTTPException(status_code=400, detail="Cannot delete yourself")
-    ok = await service.delete_user(username)
+    ok = await service.delete_user(db, username)
     if not ok:
         raise HTTPException(status_code=404, detail="User not found")
     return DeletedUserResponse(username=username)
@@ -77,7 +81,9 @@ async def admin_create_university(
     return UniversityCreateResponse(id=uni.id, name=uni.name, sources=uni.sources)
 
 
-@router.put("/admin/universities/{university_id}", response_model=UniversityCreateResponse)
+@router.put(
+    "/admin/universities/{university_id}", response_model=UniversityCreateResponse
+)
 async def admin_update_university(
     university_id: str,
     body: UpdateUniversityRequest,
@@ -102,7 +108,10 @@ async def admin_delete_university(
     return {"message": f"University {university_id} deleted"}
 
 
-@router.put("/admin/universities/{university_id}/programs", response_model=list[ProgramUpdateResponse])
+@router.put(
+    "/admin/universities/{university_id}/programs",
+    response_model=list[ProgramUpdateResponse],
+)
 async def admin_update_program_scores(
     university_id: str,
     body: UpdateProgramScoresRequest,
