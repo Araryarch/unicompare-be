@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.dto.university import ProgramItem
 
@@ -19,12 +19,12 @@ class CompareResponse(BaseModel):
 
 
 class CompareChoice(BaseModel):
-    universitas: str
-    program: str
+    universitas: str = Field(..., min_length=1)
+    program: str = Field(..., min_length=1)
 
 
 class CompareChoicesRequest(BaseModel):
-    pilihan: list[CompareChoice]
+    pilihan: list[CompareChoice] = Field(..., min_length=2, description="Minimal 2 pilihan program untuk dibandingkan")
 
 
 class UniRef(BaseModel):

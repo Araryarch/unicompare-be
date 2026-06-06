@@ -4,8 +4,9 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from app.auth.service import _seed_admin
 from app.database import _get_sessionmaker, init_db
-from app.models import University, Program, Source
+from app.models import Program, Source, University, User
 
 MOCK_UNIVERSITIES = [
     {
@@ -19,20 +20,26 @@ MOCK_UNIVERSITIES = [
             {"name": "Akuntansi", "score": 715.4},
             {"name": "Teknik Industri", "score": 700.1},
             {"name": "Psikologi", "score": 690.5},
-            {"name": "Ilmu Komunikasi", "score": 685.3}
-        ]
+            {"name": "Ilmu Komunikasi", "score": 685.3},
+        ],
     },
     {
         "id": "itb",
         "name": "Institut Teknologi Bandung",
         "programs": [
             {"name": "Sekolah Teknik Elektro dan Informatika (STEI)", "score": 760.0},
-            {"name": "Fakultas Teknik Pertambangan dan Perminyakan (FTTM)", "score": 745.2},
+            {
+                "name": "Fakultas Teknik Pertambangan dan Perminyakan (FTTM)",
+                "score": 745.2,
+            },
             {"name": "Sekolah Bisnis dan Manajemen (SBM)", "score": 730.5},
             {"name": "Fakultas Teknologi Industri (FTI)", "score": 710.4},
             {"name": "Fakultas Teknik Sipil dan Lingkungan (FTSL)", "score": 705.8},
-            {"name": "Sekolah Arsitektur, Perencanaan dan Pengembangan Kebijakan (SAPPK)", "score": 695.1}
-        ]
+            {
+                "name": "Sekolah Arsitektur, Perencanaan dan Pengembangan Kebijakan (SAPPK)",
+                "score": 695.1,
+            },
+        ],
     },
     {
         "id": "ugm",
@@ -45,8 +52,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Psikologi", "score": 695.0},
             {"name": "Hubungan Internasional", "score": 690.4},
             {"name": "Arsitektur", "score": 680.7},
-            {"name": "Ilmu Komunikasi", "score": 675.2}
-        ]
+            {"name": "Ilmu Komunikasi", "score": 675.2},
+        ],
     },
     {
         "id": "its",
@@ -57,8 +64,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Teknik Industri", "score": 690.8},
             {"name": "Teknik Elektro", "score": 685.1},
             {"name": "Teknik Sipil", "score": 675.4},
-            {"name": "Arsitektur", "score": 665.0}
-        ]
+            {"name": "Arsitektur", "score": 665.0},
+        ],
     },
     {
         "id": "unair",
@@ -69,8 +76,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Ilmu Hukum", "score": 695.2},
             {"name": "Psikologi", "score": 680.1},
             {"name": "Kesehatan Masyarakat", "score": 660.8},
-            {"name": "Manajemen", "score": 670.3}
-        ]
+            {"name": "Manajemen", "score": 670.3},
+        ],
     },
     {
         "id": "undip",
@@ -83,8 +90,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Ilmu Hukum", "score": 650.5},
             {"name": "Ilmu Komunikasi", "score": 640.1},
             {"name": "Informatika", "score": 680.2},
-            {"name": "Akuntansi", "score": 655.7}
-        ]
+            {"name": "Akuntansi", "score": 655.7},
+        ],
     },
     {
         "id": "unpad",
@@ -97,8 +104,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Manajemen", "score": 655.0},
             {"name": "Akuntansi", "score": 645.3},
             {"name": "Teknik Informatika", "score": 675.2},
-            {"name": "Hubungan Internasional", "score": 650.0}
-        ]
+            {"name": "Hubungan Internasional", "score": 650.0},
+        ],
     },
     {
         "id": "ub",
@@ -111,8 +118,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Teknik Industri", "score": 645.5},
             {"name": "Kesehatan Masyarakat", "score": 620.4},
             {"name": "Ilmu Komunikasi", "score": 630.1},
-            {"name": "Administrasi Bisnis", "score": 625.6}
-        ]
+            {"name": "Administrasi Bisnis", "score": 625.6},
+        ],
     },
     {
         "id": "uns",
@@ -124,8 +131,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Ilmu Hukum", "score": 635.4},
             {"name": "Manajemen", "score": 630.1},
             {"name": "Psikologi", "score": 645.0},
-            {"name": "Ilmu Komunikasi", "score": 620.8}
-        ]
+            {"name": "Ilmu Komunikasi", "score": 620.8},
+        ],
     },
     {
         "id": "unnes",
@@ -137,8 +144,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Ilmu Hukum", "score": 605.8},
             {"name": "Teknik Informatika", "score": 620.4},
             {"name": "Kesehatan Masyarakat", "score": 585.5},
-            {"name": "Pendidikan Bahasa Inggris", "score": 570.6}
-        ]
+            {"name": "Pendidikan Bahasa Inggris", "score": 570.6},
+        ],
     },
     {
         "id": "upi",
@@ -149,8 +156,8 @@ MOCK_UNIVERSITIES = [
             {"name": "Manajemen", "score": 610.8},
             {"name": "Ilmu Komunikasi", "score": 605.4},
             {"name": "Pendidikan Bahasa Inggris", "score": 585.1},
-            {"name": "Ilmu Komputer", "score": 635.7}
-        ]
+            {"name": "Ilmu Komputer", "score": 635.7},
+        ],
     },
     {
         "id": "unhas",
@@ -162,10 +169,11 @@ MOCK_UNIVERSITIES = [
             {"name": "Ilmu Hukum", "score": 625.1},
             {"name": "Manajemen", "score": 620.5},
             {"name": "Teknik Sipil", "score": 610.4},
-            {"name": "Kehutanan", "score": 580.6}
-        ]
-    }
+            {"name": "Kehutanan", "score": 580.6},
+        ],
+    },
 ]
+
 
 async def seed():
     await init_db()
@@ -180,17 +188,15 @@ async def seed():
 
     print("Menyimpan data sources...")
     async with AsyncSessionLocal() as session:
-        session.add(Source(name="internal_mock", label="Prediksi Internal (Mock)", count=45))
+        session.add(
+            Source(name="internal_mock", label="Prediksi Internal (Mock)", count=45)
+        )
         await session.commit()
 
     print("Menyimpan data universities...")
     async with AsyncSessionLocal() as session:
         for u in MOCK_UNIVERSITIES:
-            uni = University(
-                id=u["id"],
-                name=u["name"],
-                sources=["internal_mock"]
-            )
+            uni = University(id=u["id"], name=u["name"], sources=["internal_mock"])
             session.add(uni)
             await session.flush()
             for p in u["programs"]:
@@ -200,12 +206,17 @@ async def seed():
                     score_text=str(p["score"]),
                     degree="S1",
                     score=p["score"],
-                    source_count=1
+                    source_count=1,
                 )
                 session.add(prog)
         await session.commit()
 
+    print("Menyimpan admin credentials...")
+    async with AsyncSessionLocal() as session:
+        await _seed_admin(session)
+
     print("Seeding database fiktif berhasil!")
+
 
 if __name__ == "__main__":
     asyncio.run(seed())

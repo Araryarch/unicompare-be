@@ -34,10 +34,6 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
 
 @router.post("/auth/register", response_model=TokenResponse)
 async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
-    if len(body.username) < 3:
-        raise HTTPException(status_code=422, detail="Username too short (min 3)")
-    if len(body.password) < 4:
-        raise HTTPException(status_code=422, detail="Password too short (min 4)")
     token = await service.register(db, body.username, body.password)
     if token is None:
         raise HTTPException(status_code=409, detail="Username already exists")

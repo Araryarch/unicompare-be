@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ProgramItem(BaseModel):
@@ -37,8 +37,8 @@ class ProgramsResponse(BaseModel):
 
 
 class CreateUniversityRequest(BaseModel):
-    id: str
-    name: str
+    id: str = Field(..., min_length=2, max_length=50)
+    name: str = Field(..., min_length=3, max_length=255)
     sources: list[str] = []
 
 
