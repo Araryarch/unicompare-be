@@ -7,7 +7,9 @@ from app.models import University, Program
 from app.dto.university import (
     CreateUniversityRequest,
     ProgramItem,
+    ProgramUpdateResponse,
     ProgramsResponse,
+    UpdateProgramScoresRequest,
     UpdateUniversityRequest,
     UniversityDetail,
     UniversityListItem,
@@ -163,3 +165,36 @@ async def delete_university(db: AsyncSession, university_id: str) -> bool:
     await db.delete(uni)
     await db.commit()
     return True
+
+
+async def update_program_scores(
+    db: AsyncSession, university_id: str, data: UpdateProgramScoresRequest
+) -> list[ProgramUpdateResponse] | None:
+    result = await db.execute(
+        select(University).where(University.id == university_id)
+    )
+    uni = result.scalars().first()
+    if not uni:
+        return None
+
+    updated = []
+    for item in data.programs:
+        prog = await db.get(Program, item.id)
+        if prog is None or prog.university_id != university_id:
+            continue
+        if item.score is not None:
+            prog.score = item.score
+        if item.score_text is not None:
+            prog.score_text = item.score_text
+        updated.append(
+            ProgramUpdateResponse(
+                id=prog.id,
+                name=prog.name,
+                score=prog.score,
+                score_text=prog.score_text,
+                degree=prog.degree,
+            )
+        )
+
+    await db.commit()
+    return updated

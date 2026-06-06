@@ -47,8 +47,26 @@ class UpdateUniversityRequest(BaseModel):
     sources: list[str] | None = None
 
 
+class UpdateProgramScoreItem(BaseModel):
+    id: int
+    score: float | None = None
+    score_text: str | None = None
+
+
+class UpdateProgramScoresRequest(BaseModel):
+    programs: list[UpdateProgramScoreItem]
+
+
 class UniversityCreateResponse(BaseModel):
     id: str
     name: str
     sources: list[str]
     program_count: int = 0
+
+
+class ProgramUpdateResponse(BaseModel):
+    id: int
+    name: str
+    score: float | None
+    score_text: str
+    degree: str | None
