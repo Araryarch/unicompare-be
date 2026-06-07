@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class ProgramItem(BaseModel):
+    id: int | None = None
     name: str
     score_text: str
     score: float | None = None
