@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload
 
 from app.models import University, Program
 from app.dto.university import (
+    CreateProgramRequest,
     CreateUniversityRequest,
     ProgramItem,
     ProgramUpdateResponse,
@@ -199,3 +200,43 @@ async def update_program_scores(
 
     await db.commit()
     return updated
+
+
+async def create_program(
+    db: AsyncSession, university_id: str, data: CreateProgramRequest
+) -> ProgramUpdateResponse | None:
+    result = await db.execute(
+        select(University).where(University.id == university_id)
+    )
+    uni = result.scalars().first()
+    if not uni:
+        return None
+
+    prog = Program(
+        university_id=university_id,
+        name=data.name,
+        score=data.score,
+        score_text=data.score_text or (str(data.score) if data.score is not None else ""),
+        degree=data.degree,
+        source_count=1,
+    )
+    db.add(prog)
+    await db.commit()
+    await db.refresh(prog)
+
+    return ProgramUpdateResponse(
+        id=prog.id,
+        name=prog.name,
+        score=prog.score,
+        score_text=prog.score_text,
+        degree=prog.degree,
+    )
+
+
+async def delete_program(db: AsyncSession, program_id: int) -> bool:
+    prog = await db.get(Program, program_id)
+    if prog is None:
+        return False
+    await db.delete(prog)
+    await db.commit()
+    return True

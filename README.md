@@ -322,11 +322,64 @@ async def admin_update_program_scores(
   {"id": 2, "name": "Ilmu Hukum", "score": 700.0, "score_text": "700.0", "degree": "S1"}
 ]
 ```
+---
+
+#### `POST /api/admin/universities/{university_id}/programs` (Admin only)
+
+Tambah program studi baru ke universitas.
+
+```python
+@router.post("/admin/universities/{university_id}/programs", response_model=ProgramUpdateResponse)
+async def admin_create_program(
+    university_id: str,
+    body: CreateProgramRequest,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    result = await university_service.create_program(db, university_id, body)
+    if result is None:
+        raise HTTPException(status_code=404, detail="University not found")
+    return result
+```
+
+**Request Body:**
+```json
+{"name": "Teknik Nuklir", "score": 680.0, "score_text": "680.0", "degree": "S1"}
+```
+
+**Response:**
+```json
+{"id": 99, "name": "Teknik Nuklir", "score": 680.0, "score_text": "680.0", "degree": "S1"}
+```
+
+---
+
+#### `DELETE /api/admin/universities/{university_id}/programs/{program_id}` (Admin only)
+
+Hapus program studi.
+
+```python
+@router.delete("/admin/universities/{university_id}/programs/{program_id}")
+async def admin_delete_program(
+    university_id: str,
+    program_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    ok = await university_service.delete_program(db, program_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Program not found")
+    return ProgramDeleteResponse(id=program_id, message=f"Program {program_id} deleted")
+```
+
+**Response:**
+```json
+{"id": 99, "message": "Program 99 deleted"}
+```
 
 ---
 
 ### Universities (Public)
-
 #### `GET /api/universities`
 
 Daftar semua universitas.
@@ -597,6 +650,8 @@ class Program(Base):
 | `UpdateUniversityRequest` | `name: str \| None`, `sources: list[str] \| None` |
 | `UpdateProgramScoreItem` | `id: int`, `score: float \| None`, `score_text: str \| None` |
 | `UpdateProgramScoresRequest` | `programs: list[UpdateProgramScoreItem]` |
+| `CreateProgramRequest` | `name: str`, `score: float \| None`, `score_text: str \| None`, `degree: str \| None` |
+| `ProgramDeleteResponse` | `id: int`, `message: str` |
 | `UniversityCreateResponse` | `id: str`, `name: str`, `sources: list[str]`, `program_count: int = 0` |
 | `ProgramUpdateResponse` | `id: int`, `name: str`, `score: float \| None`, `score_text: str`, `degree: str \| None` |
 | `UniversityListItem` | `id: str`, `name: str`, `sources: list[str]`, `program_count: int` |

@@ -71,3 +71,15 @@ class ProgramUpdateResponse(BaseModel):
     score: float | None
     score_text: str
     degree: str | None
+
+
+class CreateProgramRequest(BaseModel):
+    name: str = Field(..., min_length=1)
+    score: float | None = None
+    score_text: str | None = None
+    degree: str | None = None
+
+
+class ProgramDeleteResponse(BaseModel):
+    id: int
+    message: str

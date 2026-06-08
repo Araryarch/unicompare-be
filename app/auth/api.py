@@ -11,7 +11,9 @@ from app.dto.auth import (
     UserResponse,
 )
 from app.dto.university import (
+    CreateProgramRequest,
     CreateUniversityRequest,
+    ProgramDeleteResponse,
     ProgramUpdateResponse,
     UniversityCreateResponse,
     UpdateProgramScoresRequest,
@@ -118,3 +120,32 @@ async def admin_update_program_scores(
     if result is None:
         raise HTTPException(status_code=404, detail="University not found")
     return result
+
+
+@router.post(
+    "/admin/universities/{university_id}/programs",
+    response_model=ProgramUpdateResponse,
+)
+async def admin_create_program(
+    university_id: str,
+    body: CreateProgramRequest,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    result = await university_service.create_program(db, university_id, body)
+    if result is None:
+        raise HTTPException(status_code=404, detail="University not found")
+    return result
+
+
+@router.delete("/admin/universities/{university_id}/programs/{program_id}")
+async def admin_delete_program(
+    university_id: str,
+    program_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    ok = await university_service.delete_program(db, program_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Program not found")
+    return ProgramDeleteResponse(id=program_id, message=f"Program {program_id} deleted")
