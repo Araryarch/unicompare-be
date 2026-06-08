@@ -104,6 +104,7 @@ async def get_university_detail(db: AsyncSession, university_name: str) -> Unive
 
 def _to_program_item(p: Program) -> ProgramItem:
     return ProgramItem(
+        id=p.id,
         name=p.name,
         score_text=p.score_text,
         degree=p.degree or "",
