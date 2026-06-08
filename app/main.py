@@ -9,7 +9,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.auth.api import router as auth_router
 from app.compare.api import router as compare_router
 from app.database import init_db
-from app.source.api import router as source_router
 from app.university.api import router as university_router
 
 logging.basicConfig(level=logging.INFO)
@@ -51,7 +50,6 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
     )
 
 app.include_router(auth_router, prefix="/api")
-app.include_router(source_router, prefix="/api")
 app.include_router(university_router, prefix="/api")
 app.include_router(compare_router, prefix="/api")
 

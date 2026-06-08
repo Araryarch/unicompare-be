@@ -429,9 +429,9 @@ async def get_universities(
 **Response:**
 ```json
 {
-  "total": 12,
+  "total": 60,
   "universities": [
-    {"id": "ui", "name": "Universitas Indonesia", "sources": ["internal_mock"], "program_count": 8}
+    {"id": "ui", "name": "Universitas Indonesia", "sources": ["internal_mock"], "program_count": 15}
   ]
 }
 ```
@@ -601,30 +601,6 @@ async def compare_two_choices(
 
 ---
 
-### Sources
-
-#### `GET /api/sources`
-
-Daftar sumber data.
-
-```python
-@router.get("/sources", response_model=SourcesResponse)
-async def get_sources(db: AsyncSession = Depends(get_db)):
-    return await service.get_sources(db)
-```
-
-**Response:**
-```json
-{
-  "sources": [
-    {"name": "internal_mock", "label": "Prediksi Internal (Mock)", "count": 45}
-  ],
-  "total": 1
-}
-```
-
----
-
 ## Models
 
 ```python
@@ -701,9 +677,4 @@ class Program(Base):
 | `CompareChoicesResponse` | `pilihan: list[CompareChoiceResult]`, `perbandingan: Perbandingan` |
 | `CompareResponse` | `user_score: float`, `total: int`, `universities: list[CompareUniversity]` |
 
-### Source (`app/dto/source.py`)
 
-| Class | Fields |
-|---|---|
-| `SourcesResponse` | `sources: list[SourceInfo]`, `total: int` |
-| `SourceInfo` | `name: str`, `label: str`, `count: int` |

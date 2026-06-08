@@ -10,13 +10,6 @@ class User(Base):
     password: Mapped[str] = mapped_column(String, nullable=False)
     role: Mapped[str] = mapped_column(String, nullable=False, default="user")
 
-class Source(Base):
-    __tablename__ = "sources"
-
-    name: Mapped[str] = mapped_column(String, primary_key=True, index=True)
-    label: Mapped[str] = mapped_column(String, nullable=False)
-    count: Mapped[int] = mapped_column(Integer, default=0)
-
 class University(Base):
     __tablename__ = "universities"
 

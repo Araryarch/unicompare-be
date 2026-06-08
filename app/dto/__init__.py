@@ -19,7 +19,6 @@ from app.dto.compare import (
     ProgramResult,
     UniRef,
 )
-from app.dto.source import SourceInfo, SourcesResponse
 from app.dto.university import (
     CreateUniversityRequest,
     ProgramItem,
@@ -49,8 +48,6 @@ __all__ = [
     "ProgramsResponse",
     "RegisterRequest",
     "Role",
-    "SourceInfo",
-    "SourcesResponse",
     "TokenResponse",
     "UniRef",
     "UpdateUniversityRequest",
