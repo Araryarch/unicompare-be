@@ -63,7 +63,7 @@ async def compare_score(
             ql = q.lower()
             eligible = [p for p in eligible if ql in p.name.lower()]
         if eligible:
-            eligible.sort(key=lambda x: x.score, reverse=True)
+            eligible.sort(key=lambda x: x.score if x.score is not None else 0.0, reverse=True)
             results.append(
                 CompareUniversity(
                     id=u.id,

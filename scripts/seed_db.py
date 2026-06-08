@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from app.auth.service import _seed_admin
 from app.database import _get_sessionmaker, init_db
-from app.models import Program, Source, University, User
+from app.models import Program, Source, University
 
 MOCK_UNIVERSITIES = [
     {

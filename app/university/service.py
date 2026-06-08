@@ -91,7 +91,7 @@ async def get_university_detail(db: AsyncSession, university_name: str) -> Unive
     if not uni:
         return None
         
-    programs = sorted(uni.programs, key=lambda x: x.score or 0, reverse=True)
+    programs = sorted(uni.programs, key=lambda x: x.score if x.score is not None else 0.0, reverse=True)
     
     return UniversityDetail(
         id=uni.id,
@@ -120,7 +120,7 @@ async def list_programs(db: AsyncSession, university_id: str) -> ProgramsRespons
     uni = result.scalars().first()
     if not uni:
         return None
-    programs = sorted(uni.programs, key=lambda x: x.score or 0, reverse=True)
+    programs = sorted(uni.programs, key=lambda x: x.score if x.score is not None else 0.0, reverse=True)
     return ProgramsResponse(
         university_id=uni.id,
         university_name=uni.name,

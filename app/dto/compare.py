@@ -51,8 +51,8 @@ class CompareRank(BaseModel):
 
 
 class Perbandingan(BaseModel):
-    tertinggi: CompareRank
-    terendah: CompareRank
+    tertinggi: CompareRank | None = None
+    terendah: CompareRank | None = None
     selisih: float | None = None
     urutan: list[CompareRank]
 
