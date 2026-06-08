@@ -379,6 +379,37 @@ async def admin_delete_program(
 
 ---
 
+#### `PUT /api/admin/universities/{university_id}/programs/{program_id}` (Admin only)
+
+Edit program studi (nama, score, degree).
+
+```python
+@router.put("/admin/universities/{university_id}/programs/{program_id}", response_model=ProgramUpdateResponse)
+async def admin_update_program(
+    university_id: str,
+    program_id: int,
+    body: UpdateProgramRequest,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    result = await university_service.update_program(db, program_id, body)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Program not found")
+    return result
+```
+
+**Request Body** (semua optional):
+```json
+{"name": "Teknik Nuklir", "score": 700.0, "score_text": "700.0", "degree": "S2"}
+```
+
+**Response:**
+```json
+{"id": 99, "name": "Teknik Nuklir", "score": 700.0, "score_text": "700.0", "degree": "S2"}
+```
+
+---
+
 ### Universities (Public)
 #### `GET /api/universities`
 
@@ -651,6 +682,7 @@ class Program(Base):
 | `UpdateProgramScoreItem` | `id: int`, `score: float \| None`, `score_text: str \| None` |
 | `UpdateProgramScoresRequest` | `programs: list[UpdateProgramScoreItem]` |
 | `CreateProgramRequest` | `name: str`, `score: float \| None`, `score_text: str \| None`, `degree: str \| None` |
+| `UpdateProgramRequest` | `name: str \| None`, `score: float \| None`, `score_text: str \| None`, `degree: str \| None` |
 | `ProgramDeleteResponse` | `id: int`, `message: str` |
 | `UniversityCreateResponse` | `id: str`, `name: str`, `sources: list[str]`, `program_count: int = 0` |
 | `ProgramUpdateResponse` | `id: int`, `name: str`, `score: float \| None`, `score_text: str`, `degree: str \| None` |

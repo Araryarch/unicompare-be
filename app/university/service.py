@@ -10,6 +10,7 @@ from app.dto.university import (
     ProgramItem,
     ProgramUpdateResponse,
     ProgramsResponse,
+    UpdateProgramRequest,
     UpdateProgramScoresRequest,
     UpdateUniversityRequest,
     UniversityDetail,
@@ -221,6 +222,34 @@ async def create_program(
         source_count=1,
     )
     db.add(prog)
+    await db.commit()
+    await db.refresh(prog)
+
+    return ProgramUpdateResponse(
+        id=prog.id,
+        name=prog.name,
+        score=prog.score,
+        score_text=prog.score_text,
+        degree=prog.degree,
+    )
+
+
+async def update_program(
+    db: AsyncSession, program_id: int, data: UpdateProgramRequest
+) -> ProgramUpdateResponse | None:
+    prog = await db.get(Program, program_id)
+    if prog is None:
+        return None
+
+    if data.name is not None:
+        prog.name = data.name
+    if data.score is not None:
+        prog.score = data.score
+    if data.score_text is not None:
+        prog.score_text = data.score_text
+    if data.degree is not None:
+        prog.degree = data.degree
+
     await db.commit()
     await db.refresh(prog)
 

@@ -16,6 +16,7 @@ from app.dto.university import (
     ProgramDeleteResponse,
     ProgramUpdateResponse,
     UniversityCreateResponse,
+    UpdateProgramRequest,
     UpdateProgramScoresRequest,
     UpdateUniversityRequest,
 )
@@ -119,6 +120,23 @@ async def admin_update_program_scores(
     result = await university_service.update_program_scores(db, university_id, body)
     if result is None:
         raise HTTPException(status_code=404, detail="University not found")
+    return result
+
+
+@router.put(
+    "/admin/universities/{university_id}/programs/{program_id}",
+    response_model=ProgramUpdateResponse,
+)
+async def admin_update_program(
+    university_id: str,
+    program_id: int,
+    body: UpdateProgramRequest,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(service.require_admin),
+):
+    result = await university_service.update_program(db, program_id, body)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Program not found")
     return result
 
 

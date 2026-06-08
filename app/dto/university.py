@@ -80,6 +80,13 @@ class CreateProgramRequest(BaseModel):
     degree: str | None = None
 
 
+class UpdateProgramRequest(BaseModel):
+    name: str | None = None
+    score: float | None = None
+    score_text: str | None = None
+    degree: str | None = None
+
+
 class ProgramDeleteResponse(BaseModel):
     id: int
     message: str
